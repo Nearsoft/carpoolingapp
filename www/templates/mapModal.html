@@ -1,0 +1,20 @@
+
+<ion-modal-view>
+  <ion-header-bar class="bar bar-dark">
+    <h1 class="title">
+      <i class="icon ion-android-car"></i>
+      Your ride's location
+    </h1>
+    <button class="button button-clear button-stable close" ng-click="closeModal()">X</button>
+  </ion-header-bar>
+
+  <ion-content>
+    <div id="map" data-tap-disabled="true"></div>
+  </ion-content>
+
+  <ion-footer-bar class="bar bar-dark center">
+    <label class="footer-label">
+      Distance from you: {{distance | number : 2}} meters
+    </label>
+  </ion-footer-bar>
+</ion-modal-view>

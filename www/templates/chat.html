@@ -1,0 +1,40 @@
+<ion-view view-title="Chat" class="light-grey">
+  <ion-nav-buttons side="secondary">
+    <button class="button" ng-click="viewCarLocation()">
+      <i class="icon ion-map"></i>
+    </button>
+  </ion-nav-buttons>
+ 	<ion-content has-bouncing="true" class="content" ng-show="connected">
+	  <div>
+      <div class="log pad">People in this car:</div>
+      <div class="log pad">
+        <span class="log" ng-repeat="attendee in attendees">{{attendee.name}}</span>
+      </div>
+  	 	<div class="log pad">{{strParticipants}}</div>
+	  </div>
+	  <div>
+        <ul>
+        	<li ng-class="{'message':message.style,'log':!message.style}" ng-repeat="message in messages" >
+        		<span ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span >{{message.content}}
+        	</li>
+        </ul>
+	  </div>
+	</ion-content>
+
+  <div class="list light-grey bottommsg">
+    <div class="item item-input-inset light-grey">
+      <label class="item-input-wrapper line-light-grey nopadtop">
+        <input class="line-light-grey" ng-change="updateTyping()" type="text" placeholder="Type your message" ng-enter="sendMessage()" ng-model="message">
+      </label>
+      <div class="divsend">
+          <button class="button button-positive ion-android-send iconsend" ng-click="sendMessage()"></button>
+      </div>
+    </div>
+    <!-- <button ng-click="play('bass')" class="button icon-left ion-play button-assertive">Play Bass</button>
+    <button ng-click="play('hi-hat')" class="button icon-left ion-play button-balanced">Play Hi-Hat</button>
+    <button ng-click="play('snare')" class="button icon-left ion-play button-energized">Play Snare</button>
+    <button ng-click="play('bongo')" class="button icon-left ion-play button-positive">Play Bongo</button> -->
+  </div>
+
+
+ </ion-view>
