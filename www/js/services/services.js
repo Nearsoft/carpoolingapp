@@ -9,10 +9,10 @@ angular.module('carpooling')
   function login() {
 
     return $cordovaOauth.google(clientId, ["email", "profile"]);
-  };
+  }
 })
 
-.factory('profileAPIService', function ($http) {
+.factory('profileAPIService', function ($http, apiUrl) {
 
   return {
     getProfile: getProfile
@@ -23,22 +23,37 @@ angular.module('carpooling')
     var url = 'https://www.googleapis.com/plus/v1/people/me?access_token='
     + accessToken;
 
-    return $http.get(url)
-    .then(function(response) {
+    return $http.get(url).then(function(response) {
+
       var data = response.data,
-          imageUrl = data.image.url,
-          user;
+      imageUrl,
+      user;
 
-      imageUrl = imageUrl.split("?")[0];
+      if(data) {
 
-      user = {
-        id: data.id,
-        name: data.displayName,
-        email: data.emails[0].value,
-        image: imageUrl + "?sz=40"
-      };
+        var createUser = $http.post(apiUrl + "users/create", {
+          profile: data
+        });
 
-      return user;
+        return createUser.then(function(res) {
+
+          var userData = res.data;
+
+          imageUrl = userData.photo ? userData.photo.split("?")[0] : "";
+
+          user = {
+            id: userData._id,
+            name: userData.name,
+            email: userData.email,
+            image: imageUrl ?  imageUrl + "?sz=40" : ""
+          };
+
+          return user;
+
+        }, function(err) {
+          return err;
+        });
+      }
     },
     function(error) {
       return error;
@@ -55,19 +70,12 @@ angular.module('carpooling')
     getAll: getAll
   };
 
-  function getRideInfo(user, eventId) {
+  function getRideInfo(userId, eventId) {
 
     return $http.post(apiUrl + 'events/carbyuser', {
       event_id: eventId,
-      user_id: user.id
+      user_id: userId
     });
-    //
-    // return $http.post(apiUrl + 'events/carbyuser', {
-    //   event_id: "5702b91582547a1100926167",
-    //   user_id: "5702c17482547a110092616a"
-    // });
-    //
-
   }
 
   function getAll() {
@@ -82,68 +90,88 @@ angular.module('carpooling')
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
 
-  var map;
+  // var map;
   var marker;
   var bounds = new google.maps.LatLngBounds();
 
   return {
+    drawMap: drawMap,
     calculateDistance: calculateDistance,
     getGeolocation: getGeolocation
   };
 
-  function calculateDistance(lat, lng) {
-    var eventLatLng,
-    distance,
-    myLatLng;
+  function drawMap() {
 
     return getGeolocation().then(function(position) {
 
       myLatLng = new google.maps.LatLng(position.latitude,
       position.longitude);
 
-      mapOptions.center = myLatLng;
+      var map = new google.maps.Map(document.getElementById("map"));
 
-      if(!map) {
-        map = new google.maps.Map(document.getElementById("map"), mapOptions);
+      bounds.extend(myLatLng);
 
-        bounds.extend(myLatLng);
+      marker = new google.maps.Marker({
+        map: map,
+        animation: google.maps.Animation.DROP,
+        position: myLatLng
+      });
 
-        marker = new google.maps.Marker({
-            map: map,
-            animation: google.maps.Animation.DROP,
-            position: myLatLng
-        });
+      map.fitBounds(bounds);
+      map.panToBounds(bounds);
 
-        map.fitBounds(bounds);
-        map.panToBounds(bounds);
+      google.maps.event.trigger(map, 'resize');
 
-        google.maps.event.trigger(map, 'resize');
-      }
-      else {
-        marker.setVisible(false);
 
-        marker = new google.maps.Marker({
+      return map;
+
+    }, function(err) {
+      console.log(err);
+    });
+  }
+
+  function calculateDistance(lat, lng) {
+    var eventLatLng,
+    distance,
+    myLatLng;
+
+    return drawMap().then(function(map) {
+
+      marker = new google.maps.Marker({
           map: map,
+          animation: google.maps.Animation.DROP,
           position: myLatLng
-        });
+      });
 
-        marker.setVisible(true);
-      }
+      google.maps.event.trigger(map, 'resize');
 
       eventLatLng = new google.maps.LatLng(lat, lng);
-      distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng, eventLatLng);
+      distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
+      eventLatLng);
 
       return distance;
     });
   }
 
-  function getGeolocation() {
+  function getGeolocation(latLngFormat) {
+
+    var latLngFormat = latLngFormat || false;
+
     return $cordovaGeolocation.getCurrentPosition({
       timeout: 10000, enableHighAccuracy: true
     })
     .then(function(position) {
+      var pos = position.coords;
 
-      return position.coords;
+      if(latLngFormat) {
+        return new google.maps.LatLng(pos.latitude, pos.longitude);
+      }
+      else {
+        return pos;
+      }
+    }, function(err) {
+
+      return err;
     });
   }
 });

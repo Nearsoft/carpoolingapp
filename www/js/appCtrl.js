@@ -16,11 +16,12 @@ function appCtrl($scope, authService, $state, profileAPIService,
 
   function login() {
 
-    authService.login()
-    .then(function (response) {
+    authService.login().then(function (response) {
+
       if(response !== undefined && response.access_token !== undefined) {
-        profileAPIService.getProfile(response.access_token)
-        .then(function(user) {
+        profileAPIService.getProfile(response.access_token).then(function(user) {
+
+          console.log(user);
             var state = "app.events";
             // if(UserService.existsOrSave(user)) {
             //   route = "app/events";
@@ -66,10 +67,12 @@ function appCtrl($scope, authService, $state, profileAPIService,
   function userFakeInit() {
 
     $scope.currentUser = {
-      id: "214654643134567",
-      name: "Foo",
-      email: "foo@bar.com",
-      image: "/img/bird.png"
+      "id" : "56d8b59351cf7c9c0b720b79",
+      "provider_id" : "117613786321394401804",
+      "provider" : "google",
+      "name" : "Rafa Manrique",
+      "photo" : "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50",
+      "email" : "rmanrique@nearsoft.com"
     };
     $scope.isAuthenticated = true;
   }

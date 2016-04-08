@@ -11,10 +11,10 @@ angular.module('carpooling', [
 .constant("clientSecret", "5sAsJshpCHf_s4Tzk17_7nTK")
 
 .constant("serverUrl", "http://localhost:3000/")
-// .constant("apiUrl", "http://localhost:3000/api/")
+.constant("apiUrl", "http://localhost:3000/api/")
 //
 // .constant("serverUrl", "http://nscarpooling.herokuapp.com/")
-.constant("apiUrl", "http://nscarpooling.herokuapp.com/api/")
+// .constant("apiUrl", "http://nscarpooling.herokuapp.com/api/")
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -91,15 +91,15 @@ angular.module('carpooling', [
     //   }
     // })
     //
-    // .state('app.map', {
-    //   url: '/map',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/map.html',
-    //       controller: 'mapCtrl'
-    //     }
-    //   }
-    // })
+    .state('app.rideMap', {
+      url: '/rideMap/:rideId',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/map.html',
+          controller: 'rideCtrl'
+        }
+      }
+    })
 
     .state('app.events', {
       url: '/events',

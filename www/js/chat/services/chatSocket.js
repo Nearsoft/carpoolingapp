@@ -1,7 +1,7 @@
 angular.module('carpooling')
 
-.factory('socketIo', function(socketFactory, $sanitize,
-  serverUrl) {
+.factory('socketIo', function(socketFactory, $sanitize, serverUrl, $sce, $http,
+  apiUrl) {
 
   var $scope,
   connected = false,
@@ -24,7 +24,8 @@ angular.module('carpooling')
 
   return {
     init: init,
-    addMessageToList: addMessageToList
+    addMessageToList: addMessageToList,
+    pushMessage: pushMessage
   };
 
   function init(scope, user, rideId) {
@@ -33,15 +34,6 @@ angular.module('carpooling')
     var socket = socketFactory({
     	ioSocket: myIoSocket
   	});
-    //
-    // socket.on('connect', function() {
-    //   console.log(user);
-    //   connected = true;
-    //   socket.emit('add user', {
-    //     user: user,
-    //     rideId: rideId
-    //   });
-    // });
 
     if(!connected) {
       socket.emit('add user', {
@@ -99,19 +91,33 @@ angular.module('carpooling')
 
   // Display message by adding it to the message list
   function addMessageToList(username, style_type, message) {
-    var color = style_type ? getUsernameColor(username) : null;
+
+    var color = style_type ? getUsernameColor(username) : null,
+    message = {
+      content: $sanitize($sce.trustAsHtml(message)),
+      style: style_type,
+      username: username,
+      color:color
+    };
 
     username = $sanitize(username);
     removeChatTyping(username);
 
-    messages.push({
-      content: $sanitize(message),
-      style: style_type,
-      username: username,
-      color:color
-    });
-
+    messages.push(message);
     $scope.$emit('socket::addMessageToList', messages);
+  }
+
+  function pushMessage(username, msg, rideId) {
+
+    addMessageToList(username, true, msg);
+
+    return $http.post(apiUrl + "chat/addMessage", {
+      message: {
+        content: msg,
+        username: username
+      },
+      rideId: rideId
+    });
   }
 
   // Removes the visual chat typing message

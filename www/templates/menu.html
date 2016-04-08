@@ -25,7 +25,7 @@
         <!-- <ion-item ng-if="isAuthenticated" menu-close ui-sref="app.map">
           Home
         </ion-item> -->
-        <ion-item ng-if="!isAuthenticated" menu-close ng-click="login()">
+        <ion-item ng-if="isAuthenticated" menu-close ng-click="login()">
           Login
         </ion-item>
         <ion-item ng-if="isAuthenticated" menu-close ui-sref="app.events">
