@@ -1,42 +1,31 @@
 angular.module('carpooling')
 
 .controller('rideCtrl', function($scope, $state, $stateParams,
-  $cordovaGeolocation, $cordovaLaunchNavigator, mapFactory, eventsFactory) {
+  $cordovaLaunchNavigator, mapFactory, eventsFactory, geolocationSocket,
+  $interval) {
 
-  var socket = null,
+  var socket,
   user = $scope.currentUser,
   eventId = ($stateParams.eventId || ""),
-  stop,
-  currentPosition;
+  stop;
 
-  $scope.map = null;
-  // $scope.stopSharingLocation = stopSharingLocation;
-  // $scope.viewCarLocation = viewCarLocation;
-
-  mapFactory.getGeolocation(true).then(function(position) {
-    currentPosition = position;
-  });
-
-  eventsFactory.getRideInfo(user, eventId).then(function(res) {
-
+  eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
     if(Object.keys(res.data).length > 0) {
       var ride = res.data;
       $scope.rideId = ride._id;
-      socket = socketIo.init($scope, user, rideId);
-      $scope.attendees = ride.passanger;
-      // console.log($scope.attendees)
-      $scope.connected = true;
+      socket = geolocationSocket.init(user, $scope.rideId);
+
+      stop = $interval(function() {
+        geolocationSocket.shareMyLocation(user, $scope.rideId);
+      }, 10000);
     }
-    // else {
-    //   alert("No events found");
-    //   $state.go("app.events");
-    // }
+    else {
+      alert("No events found");
+      $state.go("app.events");
+    }
   });
 
-
-
   function showCarLocation() {
-
     var destination = new google.maps.LatLng("29.0815247","-110.9515736");
 
     mapFactory.drawMap().then(function(map) {
@@ -81,7 +70,7 @@ angular.module('carpooling')
   }
 
   $scope.$on('$destroy', function() {
-    $scope.stopSharingLocation();
+    stopSharingLocation();
   });
 
   // var location = new google.maps.LatLng($scope.event.location[1], $scope.event.location[0]);

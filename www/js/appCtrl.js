@@ -15,24 +15,22 @@ function appCtrl($scope, authService, $state, profileAPIService,
   $scope.logout = logout;
 
   function login() {
+    var state;
 
     authService.login().then(function (response) {
-
       if(response !== undefined && response.access_token !== undefined) {
         profileAPIService.getProfile(response.access_token).then(function(user) {
 
-          console.log(user);
-            var state = "app.events";
-            // if(UserService.existsOrSave(user)) {
-            //   route = "app/events";
-            // }
-            // else {
-            //   route = "app/login";
-            // }
-
+          if(user) {
             setCurrentUser(user);
-            $state.go(state);
-            $ionicHistory.clearHistory();
+            state = "app.events";
+          }
+          else {
+            route = "app.login"
+          }
+
+          $ionicHistory.clearHistory();
+          $state.go(state);
         },
         function(error) {
           alert(error);

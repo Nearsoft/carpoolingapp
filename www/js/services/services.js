@@ -85,76 +85,46 @@ angular.module('carpooling')
 })
 
 .factory('mapFactory', function($cordovaGeolocation) {
-  var mapOptions = {
-    zoom: 13,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
-
-  // var map;
-  var marker;
-  var bounds = new google.maps.LatLngBounds();
+  var map,
+  markers = [],
+  bounds = new google.maps.LatLngBounds();
 
   return {
     drawMap: drawMap,
     calculateDistance: calculateDistance,
-    getGeolocation: getGeolocation
+    getGeolocation: getGeolocation,
+    addMarker: addMarker,
+    setMarkers: setMarkers
   };
 
-  function drawMap() {
+  function drawMap(showSelfLocation) {
+    var showSelfLocation = showSelfLocation || true;
 
-    return getGeolocation().then(function(position) {
+    clearMarkers();
+    map = new google.maps.Map(document.getElementById("map"));
 
-      myLatLng = new google.maps.LatLng(position.latitude,
-      position.longitude);
+    if(showSelfLocation) {
+      return getGeolocation().then(function(position) {
+        setMarkers([{
+          latitude: position.latitude,
+          longitude: position.longitude
+        }]);
 
-      var map = new google.maps.Map(document.getElementById("map"));
+        return map;
 
-      bounds.extend(myLatLng);
-
-      marker = new google.maps.Marker({
-        map: map,
-        animation: google.maps.Animation.DROP,
-        position: myLatLng
+      }, function(err) {
+        console.log(err);
       });
-
+    }
+    else {
       map.fitBounds(bounds);
       map.panToBounds(bounds);
 
-      google.maps.event.trigger(map, 'resize');
-
-
       return map;
-
-    }, function(err) {
-      console.log(err);
-    });
-  }
-
-  function calculateDistance(lat, lng) {
-    var eventLatLng,
-    distance,
-    myLatLng;
-
-    return drawMap().then(function(map) {
-
-      marker = new google.maps.Marker({
-          map: map,
-          animation: google.maps.Animation.DROP,
-          position: myLatLng
-      });
-
-      google.maps.event.trigger(map, 'resize');
-
-      eventLatLng = new google.maps.LatLng(lat, lng);
-      distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
-      eventLatLng);
-
-      return distance;
-    });
+    }
   }
 
   function getGeolocation(latLngFormat) {
-
     var latLngFormat = latLngFormat || false;
 
     return $cordovaGeolocation.getCurrentPosition({
@@ -172,6 +142,62 @@ angular.module('carpooling')
     }, function(err) {
 
       return err;
+    });
+  }
+
+  // Adds a marker to the map and push to the array.
+  function addMarker(location) {
+    if(map) {
+      var marker = new google.maps.Marker({
+        position: location,
+        map: map
+      });
+
+      markers.push(marker);
+
+      bounds.extend(location);
+      map.fitBounds(bounds);
+      map.panToBounds(bounds);
+    }
+  }
+
+  function clearMarkers() {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+    }
+
+    markers = [];
+  }
+
+  function setMarkers(newMarkers) {
+
+    clearMarkers();
+
+    angular.forEach(newMarkers, function(marker) {
+      addMarker(new google.maps.LatLng(marker.latitude,
+        marker.longitude));
+    });
+  }
+
+  function calculateDistance(lat, lng) {
+    var eventLatLng,
+    distance,
+    myLatLng;
+
+    return drawMap().then(function(map) {
+      var marker = new google.maps.Marker({
+          map: map,
+          animation: google.maps.Animation.DROP,
+          position: myLatLng
+      });
+
+      google.maps.event.trigger(map, 'resize');
+
+      eventLatLng = new google.maps.LatLng(lat, lng);
+      distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
+      eventLatLng);
+
+      return distance;
     });
   }
 });

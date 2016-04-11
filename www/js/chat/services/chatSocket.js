@@ -1,55 +1,66 @@
 angular.module('carpooling')
 
-.factory('socketIo', function(socketFactory, $sanitize, serverUrl, $sce, $http,
-  apiUrl) {
+.factory('socketIo', function(socketFactory, $sanitize, serverUrl,
+  $sce, $http, apiUrl, $filter, mapFactory) {
 
   var $scope,
   connected = false,
-  myIoSocket = io.connect(serverUrl),
+  socket,
   messages = [],
+  users = [],
   COLORS = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
 
-  var myIoSocket = io.connect(serverUrl);
-
-  try {
-    io.connect(serverUrl)
-  }
-  catch(err) {
-    alert(err);
-  }
-
   return {
-    init: init,
-    addMessageToList: addMessageToList,
+    initChat: initChat,
     pushMessage: pushMessage
   };
 
-  function init(scope, user, rideId) {
+  function initChat(scope, user, rideId) {
+    var newSocket;
     $scope = scope;
 
-    var socket = socketFactory({
-    	ioSocket: myIoSocket
-  	});
-
     if(!connected) {
-      socket.emit('add user', {
-        user: user,
-        rideId: rideId
+      try {
+        newSocket = io.connect(serverUrl)
+      }
+      catch(err) {
+        alert(err);
+      }
+
+      socket = socketFactory({
+        ioSocket: newSocket
+      });
+
+      socket.on("connect", function() {
+        connected = true;
+
+        socket.emit("add user", {
+          user: user,
+          rideId: rideId
+        });
       });
     }
-
-    // On login display welcome message
-    socket.on('login', function (users) {
+    else {
       addMessageToList("", false, stringifyParticipants(users));
+    }
+
+    getMessages(rideId).then(function(res) {
+      if(res && res.data) {
+        angular.forEach(res.data, function(msg) {
+          addMessageToList(msg.username, true, msg.content, msg.created_at);
+        });
+      }
     });
 
-    //On alreadyLoggedIn display alert message
-    socket.on('already logged in', function () {
-      alert("You have accessed in another device");
+    // On login display welcome message
+    socket.on('login', function (usrs) {
+      connected = true;
+      users = usrs;
+      addMessageToList("", false, stringifyParticipants(users));
     });
 
     // Whenever the server emits 'new message', update the chat body
@@ -81,23 +92,33 @@ angular.module('carpooling')
       removeChatTyping(data.username);
     });
 
-    // Whenever the server emits 'location shared', log the emiter's location
-    socket.on('location shared', function (data) {
-      console.log(data);
-    });
-
     return socket;
   }
 
-  // Display message by adding it to the message list
-  function addMessageToList(username, style_type, message) {
+  function addToConversation(u, rideId) {
+    mapFactory.getGeolocation().then(function(position) {
+      u.location = {
+        lat: position.latitude,
+        lng: position.longitude
+      };
 
-    var color = style_type ? getUsernameColor(username) : null,
+      socket.emit('add user', {
+        user: u,
+        rideId: rideId
+      });
+    });
+  }
+
+  // Display message by adding it to the message list
+  function addMessageToList(username, isMessage, message, time) {
+    var color = isMessage ? getUsernameColor(username) : null,
+    time = isMessage ? $filter("date")(new Date(), "yyyy-MM-dd HH:mm:ss") : "",
     message = {
       content: $sanitize($sce.trustAsHtml(message)),
-      style: style_type,
+      style: isMessage,
       username: username,
-      color:color
+      color:color,
+      time: time
     };
 
     username = $sanitize(username);
@@ -118,6 +139,11 @@ angular.module('carpooling')
       },
       rideId: rideId
     });
+  }
+
+  function getMessages(rideId) {
+    messages = [];
+    return $http.get(apiUrl + "chat/messages/" + rideId);
   }
 
   // Removes the visual chat typing message

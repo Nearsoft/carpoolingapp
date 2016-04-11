@@ -8,27 +8,17 @@ chatCtrl.$inject = [
   "$stateParams",
   "eventsFactory",
   "$ionicScrollDelegate",
-  "$interval",
-  "$ionicModal",
   "mapFactory",
-  "$ionicPlatform",
-  "$state",
-  "authService"
+  "$state"
 ];
 
 function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
-  $ionicScrollDelegate, $interval, $ionicModal, mapFactory,
-  $ionicPlatform, $state, authService) {
+  $ionicScrollDelegate, mapFactory, $state) {
 
-    // $ionicPlatform.ready(function() {
-    //
-    //   $cordovaNativeAudio.preloadSimple('snare', 'audio/snare.mp3')
-    //   .then(function(msg) { console.log(msg); })
-  	// 				   .catch(function(error) { console.error(error); });
-    //   $cordovaNativeAudio.preloadSimple('hi-hat', 'audio/highhat.mp3');
-    //   $cordovaNativeAudio.preloadSimple('bass', 'audio/bass.mp3');
-    //   $cordovaNativeAudio.preloadSimple('bongo', 'audio/bongo.mp3');
-    // });
+    var socket,
+    typing,
+    user = $scope.currentUser,
+    eventId = ($stateParams.eventId || "");
 
     $scope.messages = [];
     $scope.connected = false;
@@ -36,26 +26,23 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
 
     $scope.sendMessage = sendMessage;
     $scope.updateTyping = updateTyping;
-
-  	var socket = null,
-    typing = false,
-    user = $scope.currentUser,
-    eventId = ($stateParams.eventId || ""),
-    stop;
+    $scope.eventId = eventId;
 
     initChat();
 
     function initChat() {
+      var ride;
 
       eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
-
         if(Object.keys(res.data).length > 0) {
-          var ride = res.data;
-          $scope.rideId = ride._id;
-          socket = socketIo.init($scope, user, $scope.rideId);
-          $scope.attendees = ride.passanger;
-          // console.log($scope.attendees)
           $scope.connected = true;
+
+          ride = res.data;
+          $scope.rideId = ride._id;
+          $scope.attendees = ride.passanger;
+
+          socket = socketIo.initChat($scope, user, $scope.rideId);
+          $ionicScrollDelegate.scrollBottom();
         }
         else {
           alert("No events found");
@@ -65,13 +52,12 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
     }
 
     function updateMessages(e, msgs) {
-
        $scope.messages = msgs;
+       $ionicScrollDelegate.scrollBottom();
     }
 
   	//function called when user hits the send button
     function sendMessage() {
-
       if($scope.message !== undefined && $scope.message !== "") {
         socketIo.pushMessage(user.name, $scope.message, $scope.rideId)
         .then(function() {
@@ -90,7 +76,6 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
 
   	//function called on Input Change
     function updateTyping() {
-
       if($scope.connected) {
         if (!typing) {
             typing = true;
@@ -106,16 +91,10 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
   	}
 
     $scope.$on('socket::addMessageToList', function (e, msgs) {
-
       updateMessages(e, msgs);
     });
 
     $scope.$on('socket::removeChatTyping', function (e, msgs) {
-
       updateMessages(e, msgs);
     });
-
-    $scope.play = function(sound) {
-      $cordovaNativeAudio.play(sound);
-    };
 }
