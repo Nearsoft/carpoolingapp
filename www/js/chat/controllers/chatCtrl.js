@@ -2,16 +2,6 @@ angular.module('carpooling')
 
 .controller('chatCtrl', chatCtrl);
 
-chatCtrl.$inject = [
-  "$scope",
-  "socketIo",
-  "$stateParams",
-  "eventsFactory",
-  "$ionicScrollDelegate",
-  "mapFactory",
-  "$state"
-];
-
 function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
   $ionicScrollDelegate, mapFactory, $state) {
 

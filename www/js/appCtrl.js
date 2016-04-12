@@ -2,12 +2,7 @@ angular.module('carpooling')
 
 .controller('appCtrl', appCtrl);
 
-appCtrl.$inject = [
-  "$scope", "authService", "$state", "profileAPIService",
-  "$ionicHistory"
-];
-
-function appCtrl($scope, authService, $state, profileAPIService,
+function appCtrl($scope, authFactory, $state, profileFactory,
   $ionicHistory) {
 
   $scope.isAuthenticated = false;
