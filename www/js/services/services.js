@@ -7,7 +7,6 @@ angular.module('carpooling')
   };
 
   function login() {
-
     return $cordovaOauth.google(clientId, ["email", "profile"]);
   }
 })
@@ -24,62 +23,64 @@ angular.module('carpooling')
     + accessToken;
 
     return $http.get(url).then(function(response) {
+      var googleInfo = response.data;
 
-      var data = response.data,
-      imageUrl,
-      user;
-
-      if(data) {
-
-        var createUser = $http.post(apiUrl + "users/create", {
-          profile: data
-        });
-
-        return createUser.then(function(res) {
-
-          var userData = res.data;
-
-          imageUrl = userData.photo ? userData.photo.split("?")[0] : "";
-
-          user = {
-            id: userData._id,
-            name: userData.name,
-            email: userData.email,
-            image: imageUrl ?  imageUrl + "?sz=40" : ""
-          };
-
-          return user;
-
-        }, function(err) {
-          return err;
-        });
+      if(googleInfo) {
+        return getOrCreateUser(googleInfo);
       }
     },
     function(error) {
       return error;
     });
-  };
+  }
 
-  return profileAPIService;
+  function getOrCreateUser(data) {
+    var imageUrl,
+    user;
+
+    var createUser = $http.post(apiUrl + "users/create/", {
+      profile: data
+    });
+
+    return createUser.then(function(res) {
+      var userData = res.data;
+      imageUrl = userData.photo ? userData.photo.split("?")[0] : "";
+
+      user = {
+        id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        image: imageUrl ?  imageUrl + "?sz=40" : ""
+      };
+
+      return user;
+
+    }, function(err) {
+      return err;
+    });
+  }
 })
 
 .factory('eventsFactory', function (apiUrl, $http) {
 
   return {
     getRideInfo: getRideInfo,
+    getUserEvents: getUserEvents,
     getAll: getAll
   };
 
   function getRideInfo(userId, eventId) {
-
     return $http.post(apiUrl + 'events/carbyuser', {
       event_id: eventId,
       user_id: userId
     });
   }
 
-  function getAll() {
+  function getUserEvents(userId) {
+    return $http.get(apiUrl + 'events/user/' + userId);
+  }
 
+  function getAll() {
     return $http.get(apiUrl + 'events');
   }
 })
@@ -98,30 +99,34 @@ angular.module('carpooling')
   };
 
   function drawMap(showSelfLocation) {
-    var showSelfLocation = showSelfLocation || true;
-
     clearMarkers();
-    map = new google.maps.Map(document.getElementById("map"));
 
-    if(showSelfLocation) {
-      return getGeolocation().then(function(position) {
+    return getGeolocation().then(function(position) {
+      if(showSelfLocation) {
+        map = new google.maps.Map(document.getElementById("map"));
+
         setMarkers([{
           latitude: position.latitude,
           longitude: position.longitude
         }]);
 
         return map;
+      }
+      else {
+        var latLng = new google.maps.LatLng(position.latitude, position.longitude);
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: latLng
+        });
 
-      }, function(err) {
-        console.log(err);
-      });
-    }
-    else {
-      map.fitBounds(bounds);
-      map.panToBounds(bounds);
+        bounds.extend(latLng);
+        map.fitBounds(bounds);
+        map.panToBounds(bounds);
 
-      return map;
-    }
+        return map;
+      }
+    }, function(err) {
+      console.log(err);
+    });
   }
 
   function getGeolocation(latLngFormat) {
@@ -146,16 +151,17 @@ angular.module('carpooling')
   }
 
   // Adds a marker to the map and push to the array.
-  function addMarker(location) {
+  function addMarker(latLng, markerIcon) {
     if(map) {
       var marker = new google.maps.Marker({
-        position: location,
-        map: map
+        position: latLng,
+        map: map,
+        icon: markerIcon ? markerIcon : "http://maps.google.com/mapfiles/kml/shapes/cabs.png"
       });
 
       markers.push(marker);
 
-      bounds.extend(location);
+      bounds.extend(latLng);
       map.fitBounds(bounds);
       map.panToBounds(bounds);
     }
@@ -170,34 +176,21 @@ angular.module('carpooling')
   }
 
   function setMarkers(newMarkers) {
-
     clearMarkers();
 
     angular.forEach(newMarkers, function(marker) {
-      addMarker(new google.maps.LatLng(marker.latitude,
-        marker.longitude));
+      if(marker.location.latitude && marker.location.longitude) {
+        addMarker(new google.maps.LatLng(marker.location.latitude,
+          marker.location.longitude), marker.icon);
+      }
     });
   }
 
   function calculateDistance(lat, lng) {
-    var eventLatLng,
-    distance,
-    myLatLng;
-
-    return drawMap().then(function(map) {
-      var marker = new google.maps.Marker({
-          map: map,
-          animation: google.maps.Animation.DROP,
-          position: myLatLng
-      });
-
-      google.maps.event.trigger(map, 'resize');
-
-      eventLatLng = new google.maps.LatLng(lat, lng);
-      distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
-      eventLatLng);
-
-      return distance;
-    });
+      // eventLatLng = new google.maps.LatLng(lat, lng);
+      // distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
+      // eventLatLng);
+      //
+      // return distance;
   }
 });

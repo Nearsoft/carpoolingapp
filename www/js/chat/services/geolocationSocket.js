@@ -27,18 +27,13 @@ angular.module('carpooling')
       });
 
       socket.on("connect", function() {
-        shareMyLocation(user, rideId);
+        connected = true;
+
+        mapFactory.drawMap().then(function() {
+          shareMyLocation(user, rideId);
+        });
       });
     }
-
-    // On login display welcome message
-    socket.on('my location shared', function (users) {
-      connected = true;
-
-      mapFactory.drawMap(true).then(function() {
-        updateLocations(users);
-      });
-    });
 
     // Every time a user shares her position
     socket.on('location updated', function (users) {
@@ -70,7 +65,10 @@ angular.module('carpooling')
     var markers = [];
 
     angular.forEach(users, function(user) {
-      markers.push(user.location);
+      markers.push({
+        location: user.location,
+        icon: user.photo
+      });
     });
 
     mapFactory.setMarkers(markers);

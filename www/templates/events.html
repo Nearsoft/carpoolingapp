@@ -1,7 +1,7 @@
 <ion-view view-title="Events">
   <ion-content>
     <ion-spinner icon="spiral" ng-hide="loaded"></ion-spinner>
-    <ul class="list">
+    <ul ng-show="events" class="list">
       <li class="item" ng-repeat="event in events">
         <h2>{{event.name}}</h2>
         <div><small>{{event.place}}</small></div>
@@ -11,5 +11,8 @@
         </div>
       </li>
     </ul>
+    <div ng-hide="events">
+      <span>You have not subscribed to any events yet</span>
+    </div>
   </ion-content>
 </ion-view>

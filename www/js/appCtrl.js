@@ -43,19 +43,16 @@ function appCtrl($scope, authService, $state, profileAPIService,
   }
 
   function logout() {
-
     userInit();
     $state.go("app.login");
   };
 
   function userInit() {
-
     $scope.currentUser = null;
     $scope.isAuthenticated = false;
   }
 
   function setCurrentUser(user) {
-
     if(user !== undefined) {
       $scope.currentUser = user;
       $scope.isAuthenticated = true;
@@ -63,7 +60,6 @@ function appCtrl($scope, authService, $state, profileAPIService,
   }
 
   function userFakeInit() {
-
     $scope.currentUser = {
       "id" : "56d8b59351cf7c9c0b720b79",
       "provider_id" : "117613786321394401804",

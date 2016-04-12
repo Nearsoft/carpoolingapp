@@ -25,42 +25,6 @@ angular.module('carpooling')
     }
   });
 
-  function showCarLocation() {
-    var destination = new google.maps.LatLng("29.0815247","-110.9515736");
-
-    mapFactory.drawMap().then(function(map) {
-      $scope.map = map;
-
-      var directionsService = new google.maps.DirectionsService(),
-        directions = new google.maps.DirectionsRenderer();
-
-      directions.setMap($scope.map);
-
-      var directionsData = {
-        origin: currentPosition,
-        destination: destination,
-        travelMode: google.maps.DirectionsTravelMode.DRIVING
-      }
-
-      directionsService.route(directionsData, function(res, status) {
-        var route = res.routes[0];
-        var leg = route.legs[0];
-
-        console.log(route);
-
-        directions.setDirections(res);
-
-        console.log({
-          distance: leg.distance,
-          duration: leg.duration
-        });
-
-        $cordovaLaunchNavigator.navigate(destination, currentPosition);
-      });
-    });
-
-  }
-
   function stopSharingLocation() {
 
     if (angular.isDefined(stop)) {
@@ -72,6 +36,42 @@ angular.module('carpooling')
   $scope.$on('$destroy', function() {
     stopSharingLocation();
   });
+
+  // function showCarLocation() {
+  //   var destination = new google.maps.LatLng("29.0815247","-110.9515736");
+  //
+  //   mapFactory.drawMap().then(function(map) {
+  //     $scope.map = map;
+  //
+  //     var directionsService = new google.maps.DirectionsService(),
+  //       directions = new google.maps.DirectionsRenderer();
+  //
+  //     directions.setMap($scope.map);
+  //
+  //     var directionsData = {
+  //       origin: currentPosition,
+  //       destination: destination,
+  //       travelMode: google.maps.DirectionsTravelMode.DRIVING
+  //     }
+  //
+  //     directionsService.route(directionsData, function(res, status) {
+  //       var route = res.routes[0];
+  //       var leg = route.legs[0];
+  //
+  //       console.log(route);
+  //
+  //       directions.setDirections(res);
+  //
+  //       console.log({
+  //         distance: leg.distance,
+  //         duration: leg.duration
+  //       });
+  //
+  //       $cordovaLaunchNavigator.navigate(destination, currentPosition);
+  //     });
+  //   });
+  //
+  // }
 
   // var location = new google.maps.LatLng($scope.event.location[1], $scope.event.location[0]);
   //

@@ -48,6 +48,8 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
           alert("No events found");
           $state.go("app.events");
         }
+      }, function(err) {
+        alert(JSON.stringify(err));
       });
     }
 
