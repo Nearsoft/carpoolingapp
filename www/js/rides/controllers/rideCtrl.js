@@ -7,29 +7,25 @@ angular.module('carpooling')
   var socket,
   user = $scope.currentUser,
   eventId = ($stateParams.eventId || ""),
-  stop;
+  intervalId;
 
-  eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
-    if(Object.keys(res.data).length > 0) {
+  (function initMap() {
+    eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
       var ride = res.data;
       $scope.rideId = ride._id;
       socket = geolocationSocket.init(user, $scope.rideId);
 
-      stop = $interval(function() {
+      intervalId = $interval(function() {
         geolocationSocket.shareMyLocation(user, $scope.rideId);
-      }, 10000);
-    }
-    else {
-      alert("No events found");
-      $state.go("app.events");
-    }
-  });
+      }, 20000);
+    });
+  })();
 
   function stopSharingLocation() {
 
-    if (angular.isDefined(stop)) {
-      $interval.cancel(stop);
-      stop = undefined;
+    if (angular.isDefined(intervalId)) {
+      $interval.cancel(intervalId);
+      intervalId = undefined;
     }
   }
 

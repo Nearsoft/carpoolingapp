@@ -3,8 +3,6 @@
     <ion-nav-bar class="bar bar-dark">
       <ion-nav-back-button>
       </ion-nav-back-button>
-
-
       <ion-nav-buttons side="left">
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
         </button>
@@ -19,9 +17,6 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <!--<ion-item menu-close href="#/app/profile">-->
-          <!--Profile-->
-        <!--</ion-item>-->
         <!-- <ion-item ng-if="isAuthenticated" menu-close ui-sref="app.map">
           Home
         </ion-item> -->
@@ -39,9 +34,6 @@
         </ion-item>
         <ion-item ng-if="isAuthenticated" menu-close href="#/app/search">
           Get a ride
-        </ion-item>
-        <ion-item ng-if="isAuthenticated" menu-close href="#/app/chat">
-          Chat
         </ion-item> -->
         <ion-item ng-if="isAuthenticated" menu-close ng-click="logout()">
           Logout

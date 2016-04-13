@@ -1,11 +1,15 @@
-<ion-view view-title="Events">
+<ion-view view-title="My Events">
   <ion-content>
     <ion-spinner icon="spiral" ng-hide="loaded"></ion-spinner>
     <ul ng-show="events" class="list">
       <li class="item" ng-repeat="event in events">
         <h2>{{event.name}}</h2>
         <div><small>{{event.place}}</small></div>
-        <div><small>{{event.address}}</small></div>         
+        <div><small>{{event.address}}</small></div>
+        <div>
+          <a ui-sref="app.chat({eventId: event._id})">Chat</a>
+          <a ui-sref="app.rideMap({eventId: event._id})">Map</a>
+        </div>
       </li>
     </ul>
   </ion-content>

@@ -10,11 +10,12 @@ angular.module('carpooling', [
 .constant("clientId", "764821343773-cjpf8lnubnnmjrupiu8oen4vsacgcq9n.apps.googleusercontent.com")
 .constant("clientSecret", "5sAsJshpCHf_s4Tzk17_7nTK")
 
-.constant("serverUrl", "http://localhost:3000/")
-.constant("apiUrl", "http://localhost:3000/api/")
 
-// .constant("serverUrl", "http://nscarpooling.herokuapp.com/")
-// .constant("apiUrl", "http://nscarpooling.herokuapp.com/api/")
+// .constant("serverUrl", "http://localhost:3000/")
+// .constant("apiUrl", "http://localhost:3000/api/")
+
+.constant("serverUrl", "http://nscarpooling.herokuapp.com/")
+.constant("apiUrl", "http://nscarpooling.herokuapp.com/api/")
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -62,103 +63,54 @@ angular.module('carpooling', [
     controller: 'appCtrl'
   })
 
-    // .state('app.profile', {
-    //   url: '/profile',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/profile.html',
-    //       controller: 'profileCtrl'
-    //     }
-    //   }
-    // })
-    //
-    // .state('app.routes', {
-    //   url: '/my-routes',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/routes.html',
-    //       controller: 'routesCtrl'
-    //     }
-    //   }
-    // })
-    //
-    // .state('app.search', {
-    //   url: '/search',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/search.html'
-    //     }
-    //   }
-    // })
-    //
-    .state('app.rideMap', {
-      url: '/rideMap/:eventId',
+  .state('app.rideMap', {
+    url: '/rideMap/:eventId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/map.html',
+        controller: 'rideCtrl'
+      }
+    }
+  })
+
+  .state('app.events', {
+    url: '/events',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/events.html',
+        controller: 'eventsCtrl'
+      }
+    }
+  })
+
+  .state('app.myEvents', {
+    url: '/events?me',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/myEvents.html',
+        controller: 'eventsCtrl'
+      }
+    }
+  })
+
+  .state('app.login', {
+      url: '/login',
       views: {
         'menuContent': {
-          templateUrl: 'templates/map.html',
-          controller: 'rideCtrl'
+          templateUrl: 'templates/auth.html'
         }
       }
-    })
+  })
 
-    .state('app.events', {
-      url: '/events',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/events.html',
-          controller: 'eventsCtrl'
-        }
+  .state('app.chat', {
+    url: '/chat/:eventId',
+    views: {
+      'menuContent': {
+        templateUrl: "templates/chat.html",
+        controller: 'chatCtrl'
       }
-    })
-
-    .state('app.myEvents', {
-      url: '/events?me',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/events.html',
-          controller: 'eventsCtrl'
-        }
-      }
-    })
-
-    // .state('app.event', {
-    //   url: '/events/:id',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/event.html',
-    //       controller: 'eventCtrl'
-    //     }
-    //   }
-    // })
-    //
-    // .state('app.settings', {
-    //   url: '/settings',
-    //   views: {
-    //     'menuContent': {
-    //       templateUrl: 'templates/settings.html',
-    //       controller: 'settingsCtrl'
-    //     }
-    //   }
-    // })
-
-    .state('app.login', {
-        url: '/login',
-        views: {
-          'menuContent': {
-            templateUrl: 'templates/auth.html'
-          }
-        }
-    })
-
-    .state('app.chat', {
-      url: '/chat/:eventId',
-      views: {
-        'menuContent': {
-          templateUrl: "templates/chat.html",
-          controller: 'chatCtrl'
-        }
-      }
-    });
+    }
+  });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/login');

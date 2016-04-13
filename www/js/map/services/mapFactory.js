@@ -1,6 +1,6 @@
 angular.module('carpooling')
 
-.factory('mapFactory', function($cordovaGeolocation) {
+.factory('mapFactory', function($cordovaGeolocation, $filter) {
   var map,
   markers = [],
   bounds = new google.maps.LatLngBounds();
@@ -13,34 +13,21 @@ angular.module('carpooling')
     setMarkers: setMarkers
   };
 
-  function drawMap(showSelfLocation) {
+  function drawMap() {
     clearMarkers();
 
-    return getGeolocation().then(function(position) {
-      if(showSelfLocation) {
-        map = new google.maps.Map(document.getElementById("map"));
+    return getGeolocation(true).then(function(position) {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: position
+      });
 
-        setMarkers([{
-          latitude: position.latitude,
-          longitude: position.longitude
-        }]);
+      bounds.extend(position);
+      map.fitBounds(bounds);
+      map.panToBounds(bounds);
 
-        return map;
-      }
-      else {
-        var latLng = new google.maps.LatLng(position.latitude, position.longitude);
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: latLng
-        });
-
-        bounds.extend(latLng);
-        map.fitBounds(bounds);
-        map.panToBounds(bounds);
-
-        return map;
-      }
+      return map;
     }, function(err) {
-      console.log(err);
+      return err;
     });
   }
 
@@ -48,7 +35,7 @@ angular.module('carpooling')
     var latLngFormat = latLngFormat || false;
 
     return $cordovaGeolocation.getCurrentPosition({
-      timeout: 10000, enableHighAccuracy: true
+      timeout: 10000, enableHighAccuracy: false
     })
     .then(function(position) {
       var pos = position.coords;
@@ -60,25 +47,46 @@ angular.module('carpooling')
         return pos;
       }
     }, function(err) {
-
-      return err;
+      return "Unable to get geolocation:" + err;
     });
   }
 
   // Adds a marker to the map and push to the array.
   function addMarker(latLng, markerIcon) {
+    var markerOptions = {
+      position: latLng,
+      map: map
+    };
+
+    if(markerIcon) {
+      markerOptions.icon = markerIcon;
+    }
+
     if(map) {
-      var marker = new google.maps.Marker({
-        position: latLng,
-        map: map,
-        icon: markerIcon ? markerIcon : "http://maps.google.com/mapfiles/kml/shapes/cabs.png"
+      var marker = new google.maps.Marker(markerOptions);
+
+      calculateDistance(latLng).then(function(distance) {
+        createInfoWindow('Distance: ' + $filter("number")(distance, 2) + " meters", marker);
+      }, function() {
+        createInfoWindow('Unable to compute distance', marker);
       });
 
       markers.push(marker);
-
       bounds.extend(latLng);
       map.fitBounds(bounds);
       map.panToBounds(bounds);
+    }
+  }
+
+  function createInfoWindow(content, marker) {
+    if(marker) {
+      var infoWindow = new google.maps.InfoWindow({
+        content: content
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.open(map, marker);
+      });
     }
   }
 
@@ -86,7 +94,6 @@ angular.module('carpooling')
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(null);
     }
-
     markers = [];
   }
 
@@ -94,18 +101,16 @@ angular.module('carpooling')
     clearMarkers();
 
     angular.forEach(newMarkers, function(marker) {
-      if(marker.location.latitude && marker.location.longitude) {
+      if(marker.location && marker.location.latitude && marker.location.longitude) {
         addMarker(new google.maps.LatLng(marker.location.latitude,
           marker.location.longitude), marker.icon);
       }
     });
   }
 
-  function calculateDistance(lat, lng) {
-      // eventLatLng = new google.maps.LatLng(lat, lng);
-      // distance = google.maps.geometry.spherical.computeDistanceBetween(myLatLng,
-      // eventLatLng);
-      //
-      // return distance;
+  function calculateDistance(pointA) {
+    return getGeolocation(true).then(function(pointB) {
+      return google.maps.geometry.spherical.computeDistanceBetween(pointA, pointB);
+    });
   }
 });

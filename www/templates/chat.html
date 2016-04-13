@@ -4,18 +4,23 @@
       <i class="icon ion-map"></i>
     </button>
   </ion-nav-buttons>
- 	<ion-content has-bouncing="true" class="content" ng-show="connected">
-    <div class="log pad">People in this car:</div>
-    <div class="log pad">
-      <span ng-repeat="attendee in attendees">{{attendee.name}}</span>
+
+ 	<ion-content has-bouncing="true" class="content">
+    <ion-spinner icon="spiral" ng-hide="connected"></ion-spinner>
+    <div ng-show="connected">
+      <div class="log pad">People in this car:</div>
+      <div class="log pad">
+        <span ng-if="attendees" ng-repeat="attendee in attendees">{{attendee.name}}</span>
+        <span ng-if="!attendees">This ride has no passengers yet</span>
+      </div>
+      <div class="log pad">{{strParticipants}}</div>
+      <div ng-class="{message: message.style, log: !message.style}" ng-repeat="message in messages">
+        <span ng-class="{message: message.style, log: !message.style}" ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span>
+        <span ng-class="{message: message.style, log: !message.style}">{{message.content}}</span>
+        <br>
+        <small class="log font-mini">{{message.time}}</small>
+      </div>
     </div>
-	 	<div class="log pad">{{strParticipants}}</div>
-  	<div ng-class="{message: message.style, log: !message.style}" ng-repeat="message in messages">
-  		<span ng-class="{message: message.style, log: !message.style}" ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span>
-      <span ng-class="{message: message.style, log: !message.style}">{{message.content}}</span>
-      <br>
-      <small class="log font-mini">{{message.time}}</small>
-  	</div>
 	</ion-content>
 
   <div class="list light-grey bottommsg">

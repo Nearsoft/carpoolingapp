@@ -1,6 +1,6 @@
 angular.module('carpooling')
 
-.factory('geolocationSocket', function(socketFactory, serverUrl, mapFactory) {
+.factory('geolocationSocket', function(socketFactory, serverUrl, mapFactory, $ionicPlatform) {
 
   var $scope,
   socket,
@@ -29,8 +29,12 @@ angular.module('carpooling')
       socket.on("connect", function() {
         connected = true;
 
-        mapFactory.drawMap().then(function() {
-          shareMyLocation(user, rideId);
+        $ionicPlatform.ready(function() {
+          mapFactory.drawMap().then(function() {
+            shareMyLocation(user, rideId);
+          }, function(err) {
+            alert(err);
+          });
         });
       });
     }

@@ -18,9 +18,8 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
     $scope.updateTyping = updateTyping;
     $scope.eventId = eventId;
 
-    initChat();
 
-    function initChat() {
+    (function initChat() {
       var ride;
 
       eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
@@ -29,19 +28,19 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
 
           ride = res.data;
           $scope.rideId = ride._id;
-          $scope.attendees = ride.passanger;
+          $scope.attendees = ride.passanger.length > 0 ? ride.passanger : null;
 
           socket = socketIo.initChat($scope, user, $scope.rideId);
           $ionicScrollDelegate.scrollBottom();
         }
         else {
-          alert("No events found");
-          $state.go("app.events");
+          alert("You must be a driver or passanger to get access to the chatroom");
+          $state.go("app.myEvents");
         }
       }, function(err) {
         alert(JSON.stringify(err));
       });
-    }
+    })();
 
     function updateMessages(e, msgs) {
        $scope.messages = msgs;
@@ -53,14 +52,11 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
       if($scope.message !== undefined && $scope.message !== "") {
         socketIo.pushMessage(user.name, $scope.message, $scope.rideId)
         .then(function() {
-
           socket.emit('new message', $scope.message);
           socket.emit('stop typing');
 
           typing = false;
-
           $scope.message = "";
-
           $ionicScrollDelegate.scrollBottom();
         });
       }
@@ -70,10 +66,8 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
     function updateTyping() {
       if($scope.connected) {
         if (!typing) {
-            typing = true;
-
-            // Updates the typing event
-            socket.emit('typing');
+          typing = true;
+          socket.emit('typing');
         }
         else if($scope.message === "") {
           typing = false;

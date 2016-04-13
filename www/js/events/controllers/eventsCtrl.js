@@ -1,23 +1,24 @@
 angular.module('carpooling')
 
 .controller('eventsCtrl', function($scope, eventsFactory, $stateParams) {
-  if($stateParams.hasOwnProperty("me")) {
-    eventsFactory.getUserEvents($scope.currentUser.id).then(function(res) {
+  var handler = {
+    success: function(res) {
       $scope.loaded = true;
       $scope.events = res.data && res.data.length > 0 ? res.data : null;
-    }, function (error) {
+    },
+    fail: function (error) {
       $scope.loaded = true;
       $scope.events = null;
-    });
+    }
+  }
+  
+  if($stateParams.hasOwnProperty("me")) {
+    eventsFactory.getUserEvents($scope.currentUser.id)
+    .then(handler.success, handler.fail);
   }
   else {
-    eventsFactory.getAll().then(function(res) {
-      $scope.loaded = true;
-      $scope.events = res.data && res.data.length > 0 ? res.data : null;
-    }, function (error) {
-      $scope.loaded = true;
-      $scope.events = null;
-    });
+    eventsFactory.getAll()
+    .then(handler.success, handler.fail);
   }
 
 });
