@@ -66,7 +66,7 @@ angular.module('carpooling')
       var marker = new google.maps.Marker(markerOptions);
 
       calculateDistance(latLng).then(function(distance) {
-        createInfoWindow('Distance: ' + $filter("number")(distance, 2) + " meters", marker);
+        createInfoWindow('Distance: ' + $filter("number")(distance / 1000, 2) + " km", marker);
       }, function() {
         createInfoWindow('Unable to compute distance', marker);
       });
