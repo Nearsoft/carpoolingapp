@@ -130,3 +130,9 @@ a.chat-avatar img {
   font-size: 9px;
   padding: 10px 0 10px 10px;
 }
+
+li > a {
+  text-decoration: none;
+  color: inherit;
+}
+

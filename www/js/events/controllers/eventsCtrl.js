@@ -21,4 +21,11 @@ angular.module('carpooling')
     .then(handler.success, handler.fail);
   }
 
+})
+
+.controller('eventCtrl', function($scope, eventsFactory, $stateParams) {
+  eventsFactory.getEvent($stateParams.id)
+    .then(function(res) {
+      $scope.event = res.data;
+    });
 });
