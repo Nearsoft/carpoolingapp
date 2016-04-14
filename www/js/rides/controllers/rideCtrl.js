@@ -4,8 +4,7 @@ angular.module('carpooling')
   $cordovaLaunchNavigator, mapFactory, eventsFactory, geolocationSocket,
   $interval) {
 
-  var socket,
-  user = $scope.currentUser,
+  var user = $scope.currentUser,
   eventId = ($stateParams.eventId || ""),
   intervalId;
 
@@ -13,7 +12,7 @@ angular.module('carpooling')
     eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
       var ride = res.data;
       $scope.rideId = ride._id;
-      socket = geolocationSocket.init(user, $scope.rideId);
+      geolocationSocket.init(user, $scope.rideId);
 
       intervalId = $interval(function() {
         geolocationSocket.shareMyLocation(user, $scope.rideId);
@@ -22,7 +21,6 @@ angular.module('carpooling')
   })();
 
   function stopSharingLocation() {
-
     if (angular.isDefined(intervalId)) {
       $interval.cancel(intervalId);
       intervalId = undefined;

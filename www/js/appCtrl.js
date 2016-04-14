@@ -58,18 +58,4 @@ function appCtrl($scope, authFactory, $state, profileFactory,
       $scope.isAuthenticated = true;
     }
   }
-
-  function userFakeInit() {
-    $scope.currentUser = {
-      "id" : "5702b8d582547a1100926166",
-      "provider_id" : "117613786321394401804",
-      "provider" : "google",
-      "name" : "Rafa Manrique",
-      "photo" : "https://lh6.googleusercontent.com/-F2d48-tFicc/AAAAAAAAAAI/AAAAAAAAAAo/-j7vbigZIB8/photo.jpg?sz=50",
-      "email" : "rmanrique@nearsoft.com"
-    };
-    $scope.isAuthenticated = true;
-  }
-  
-//   userFakeInit();
 }

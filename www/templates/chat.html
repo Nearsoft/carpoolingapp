@@ -10,7 +10,7 @@
     <div ng-show="connected">
       <div class="log pad">People in this car:</div>
       <div class="log pad">
-        <span ng-if="attendees" ng-repeat="attendee in attendees">{{attendee.name}}</span>
+        <span ng-if="attendees" ng-repeat="attendee in attendees">{{attendee.name}}{{$last ? "" : ", "}}</span>
         <span ng-if="!attendees">This ride has no passengers yet</span>
       </div>
       <div class="log pad">{{strParticipants}}</div>

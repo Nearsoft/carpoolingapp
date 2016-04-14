@@ -4,6 +4,8 @@ angular.module('carpooling')
 
   var $scope,
   socket,
+  socketUser,
+  socketRideId,
   connected = false;
 
   return {
@@ -12,31 +14,14 @@ angular.module('carpooling')
   };
 
   function init(user, rideId) {
-    var newSocket;
+    socketUser = user;
+    socketRideId = rideId;
 
     if(!connected) {
-      try {
-        newSocket = io.connect(serverUrl)
-      }
-      catch(err) {
-        alert(err);
-      }
-
-      socket = socketFactory({
-        ioSocket: newSocket
-      });
-
-      socket.on("connect", function() {
-        connected = true;
-
-        $ionicPlatform.ready(function() {
-          mapFactory.drawMap().then(function() {
-            shareMyLocation(user, rideId);
-          }, function(err) {
-            alert(err);
-          });
-        });
-      });
+      openSocket();
+    }
+    else {
+      initMap();
     }
 
     // Every time a user shares her position
@@ -47,18 +32,53 @@ angular.module('carpooling')
     return socket;
   }
 
-  function shareMyLocation(user, rideId) {
+  function openSocket() {
+    var newSocket;
+
+    try {
+      newSocket = io.connect(serverUrl)
+    }
+    catch(err) {
+      alert(err);
+      return;
+    }
+
+    socket = socketFactory({
+      ioSocket: newSocket
+    });
+
+    socket.on("connect", function() {
+      connected = true;
+      initMap();
+    });
+
+    return socket;
+  }
+
+  function initMap() {
+    $ionicPlatform.ready(function() {
+      mapFactory.drawMap().then(function() {
+        shareMyLocation();
+      }, function(err) {
+        alert(err);
+      });
+    });
+  }
+
+  function shareMyLocation() {
+    if(!socket) return;
+    
     connected = true;
 
     mapFactory.getGeolocation().then(function(position) {
-      user.location = {
+      socketUser.location = {
         latitude: position.latitude,
         longitude: position.longitude
       };
 
       socket.emit("share location", {
-        user: user,
-        rideId: rideId
+        user: socketUser,
+        rideId: socketRideId
       });
     }, function(err) {
       alert(err);
@@ -69,10 +89,12 @@ angular.module('carpooling')
     var markers = [];
 
     angular.forEach(users, function(user) {
-      markers.push({
-        location: user.location,
-        icon: user.photo
-      });
+      if(user.location.latitude && user.location.longitude) {
+        markers.push({
+          location: user.location,
+          icon: user.photo
+        });
+      }
     });
 
     mapFactory.setMarkers(markers);
