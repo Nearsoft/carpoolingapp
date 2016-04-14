@@ -11,7 +11,7 @@ angular.module('carpooling')
       $scope.events = null;
     }
   }
-  
+
   if($stateParams.hasOwnProperty("me")) {
     eventsFactory.getUserEvents($scope.currentUser.id)
     .then(handler.success, handler.fail);
@@ -23,9 +23,13 @@ angular.module('carpooling')
 
 })
 
-.controller('eventCtrl', function($scope, eventsFactory, $stateParams) {
+.controller('eventCtrl', function($scope, $stateParams, eventsFactory, mapFactory) {
   eventsFactory.getEvent($stateParams.id)
     .then(function(res) {
       $scope.event = res.data;
+      var coords = new google.maps.LatLng(res.data.position)
+      mapFactory.drawMap(coords).then(function(res) {
+        $scope.map = res;
+      });
     });
 });
