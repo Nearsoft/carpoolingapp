@@ -9,6 +9,11 @@ angular.module('carpooling')
   intervalId;
 
   (function initMap() {
+    if(!user || !eventId) {
+      $state.go("app.myEvents");
+      return;
+    }
+    
     eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
       var ride = res.data;
       $scope.rideId = ride._id;

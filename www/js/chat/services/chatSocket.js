@@ -9,9 +9,9 @@ angular.module('carpooling')
   messages = [],
   users = [],
   COLORS = [
-    '#e21400', '#91580f', '#f8a700', '#f78b00',
-    '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
+    '#df3232', '#ff8a00', '#58b739', '#00bfd4',
+    '#8f5dbd', '#533618', '#183553', '#8a2a2b',
+    '#000000', '#dc16f4', '#00E0E5', '#781384'
   ];
 
   return {
@@ -112,16 +112,15 @@ angular.module('carpooling')
   // Display message by adding it to the message list
   function addMessageToList(username, isMessage, message, time) {
     var color = isMessage ? getUsernameColor(username) : null,
-    time = isMessage ? $filter("date")(new Date(), "yyyy-MM-dd HH:mm:ss") : "",
+    time = isMessage ? $filter("date")(time, "medium") : "",
     message = {
-      content: $sanitize($sce.trustAsHtml(message)),
+      content: $sanitize(message),
       style: isMessage,
       username: username,
       color:color,
       time: time
     };
 
-    username = $sanitize(username);
     removeChatTyping(username);
 
     messages.push(message);

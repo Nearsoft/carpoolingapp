@@ -49,6 +49,12 @@ angular.module('carpooling')
 
     socket.on("connect", function() {
       connected = true;
+
+      socket.emit("add user", {
+        user: socketUser,
+        rideId: socketRideId
+      });
+
       initMap();
     });
 
@@ -67,7 +73,7 @@ angular.module('carpooling')
 
   function shareMyLocation() {
     if(!socket) return;
-    
+
     connected = true;
 
     mapFactory.getGeolocation().then(function(position) {
@@ -87,12 +93,12 @@ angular.module('carpooling')
 
   function updateLocations(users) {
     var markers = [];
-
+    
     angular.forEach(users, function(user) {
-      if(user.location.latitude && user.location.longitude) {
+      if(user.location && user.location.latitude && user.location.longitude) {
         markers.push({
           location: user.location,
-          icon: user.photo
+          icon: user.image
         });
       }
     });

@@ -17,6 +17,8 @@ angular.module('carpooling')
     clearMarkers();
 
     return getGeolocation(true).then(function(position) {
+      if(!position) return;
+
       map = new google.maps.Map(document.getElementById("map"), {
         center: position
       });
@@ -39,6 +41,7 @@ angular.module('carpooling')
     })
     .then(function(position) {
       var pos = position.coords;
+      if(!pos.latitude || !pos.longitude) return;
 
       if(latLngFormat) {
         return new google.maps.LatLng(pos.latitude, pos.longitude);
@@ -72,9 +75,9 @@ angular.module('carpooling')
       });
 
       markers.push(marker);
-      bounds.extend(latLng);
-      map.fitBounds(bounds);
-      map.panToBounds(bounds);
+      // bounds.extend(latLng);
+      // map.fitBounds(bounds);
+      // map.panToBounds(bounds);
     }
   }
 

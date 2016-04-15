@@ -1,6 +1,6 @@
 angular.module('carpooling')
 
-.controller('eventsCtrl', function($scope, eventsFactory, $stateParams) {
+.controller('eventsCtrl', function($scope, eventsFactory, $stateParams, $state) {
   var handler = {
     success: function(res) {
       $scope.loaded = true;
@@ -11,7 +11,12 @@ angular.module('carpooling')
       $scope.events = null;
     }
   }
-  
+
+  if(!$scope.currentUser) {
+    $state.go("app.login");
+    return;
+  }
+
   if($stateParams.hasOwnProperty("me")) {
     eventsFactory.getUserEvents($scope.currentUser.id)
     .then(handler.success, handler.fail);

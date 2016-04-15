@@ -20,6 +20,11 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
 
 
     (function initChat() {
+      if(!user || !eventId) {
+        $state.go("app.myEvents");
+        return;
+      }
+            
       var ride;
 
       eventsFactory.getRideInfo(user.id, eventId).then(function(res) {
@@ -38,7 +43,7 @@ function chatCtrl($scope, socketIo, $stateParams, eventsFactory,
           $state.go("app.myEvents");
         }
       }, function(err) {
-        alert(JSON.stringify(err));
+        alert(err);
       });
     })();
 
