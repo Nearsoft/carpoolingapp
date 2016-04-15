@@ -14,12 +14,14 @@
         <span ng-if="!attendees">This ride has no passengers yet</span>
       </div>
       <div class="log pad">{{strParticipants}}</div>
-      <div ng-class="{message: message.style, log: !message.style}" ng-repeat="message in messages">
-        <span ng-class="{message: message.style, log: !message.style}" ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span>
-        <span ng-class="{message: message.style, log: !message.style}">{{message.content}}</span>
-        <br>
-        <small class="log font-mini">{{message.time}}</small>
-      </div>
+      <ion-list>
+        <ion-item ng-class="{message: message.style, log: !message.style}" ng-repeat="message in messages">
+          <span ng-class="{message: message.style, log: !message.style}" ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span>
+          <span ng-class="{message: message.style, log: !message.style}" ng-bind-html="message.content"></span>
+          <br>
+          <small class="log font-mini">{{message.time}}</small>
+        </ion-item>
+      </ion-list>
     </div>
 	</ion-content>
 
