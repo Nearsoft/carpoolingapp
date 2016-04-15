@@ -5,7 +5,8 @@ angular.module('carpooling')
   return {
     getRideInfo: getRideInfo,
     getUserEvents: getUserEvents,
-    getAll: getAll
+    getAll: getAll,
+    getEvent: getEvent
   };
 
   function getRideInfo(userId, eventId) {
@@ -21,5 +22,9 @@ angular.module('carpooling')
 
   function getAll() {
     return $http.get(apiUrl + 'events');
+  }
+
+  function getEvent(id) {
+    return $http.get(apiUrl + 'events/' + id);
   }
 });

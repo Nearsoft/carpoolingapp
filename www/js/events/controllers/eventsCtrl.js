@@ -26,4 +26,15 @@ angular.module('carpooling')
     .then(handler.success, handler.fail);
   }
 
+})
+
+.controller('eventCtrl', function($scope, $stateParams, eventsFactory, mapFactory) {
+  eventsFactory.getEvent($stateParams.id)
+    .then(function(res) {
+      $scope.event = res.data;
+      var coords = new google.maps.LatLng(res.data.position)
+      mapFactory.drawMap(coords).then(function(res) {
+        $scope.map = res;
+      });
+    });
 });

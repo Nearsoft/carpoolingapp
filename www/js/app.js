@@ -93,6 +93,16 @@ angular.module('carpooling', [
     }
   })
 
+  .state('app.event', {
+    url: '/event/:id',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/event.html',
+        controller: 'eventCtrl'
+      }
+    }
+  })
+
   .state('app.login', {
       url: '/login',
       views: {
