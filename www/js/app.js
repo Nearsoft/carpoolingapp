@@ -59,20 +59,19 @@ angular.module('carpooling', [
   .state('app', {
     url: '/app',
     abstract: true,
-    templateUrl: 'templates/menu.html',
+    templateUrl: 'templates/tabs.html',
     controller: 'appCtrl'
   })
-
-  .state('app.rideMap', {
-    url: '/rideMap/:eventId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/map.html',
-        controller: 'rideCtrl'
+  
+  .state('app.home', {
+      url: '/home',
+      views: {
+        'tab-home': {
+          templateUrl: 'templates/home.html',
+          controller: 'eventsCtrl'
+        }
       }
-    }
   })
-
   .state('app.events', {
     url: '/events',
     views: {
@@ -82,7 +81,15 @@ angular.module('carpooling', [
       }
     }
   })
-
+  .state('app.rideMap', {
+    url: '/rideMap/:eventId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/map.html',
+        controller: 'rideCtrl'
+      }
+    }
+  })
   .state('app.myEvents', {
     url: '/events?me',
     views: {
@@ -111,17 +118,9 @@ angular.module('carpooling', [
         }
       }
   })
+  
 
-  .state('app.chat', {
-    url: '/chat/:eventId',
-    views: {
-      'menuContent': {
-        templateUrl: "templates/chat.html",
-        controller: 'chatCtrl'
-      }
-    }
-  });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/app/home');
 });

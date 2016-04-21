@@ -1,0 +1,22 @@
+<ion-view view-title="Car pooling" >
+  <ion-content>
+    
+    <div class="list card">
+      <div class="item title">
+        My events
+      </div>
+      <div class="item item-body" ng-repeat="event in events">
+        <h2>{{event.name}}</h2>
+        <p>
+          This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
+          the content is from a card-body consisting of an image and paragraph text.
+        </p>
+        <p>
+          <a href="#" class=" button custom "><i class="icon ion-map"></i> View map </a>
+          <a href="#" class=" button custom pull-right"><i class="icon ion-chatbubbles"></i> Chat</a>
+        </p>
+      </div>
+
+  </div>
+  </ion-content>
+</ion-view>
