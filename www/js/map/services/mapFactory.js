@@ -20,7 +20,7 @@ angular.module('carpooling')
       if(!position) return;
 
       map = new google.maps.Map(document.getElementById("map"), {
-        center: position
+        center: position,
       });
 
       bounds.extend(position);
@@ -73,7 +73,8 @@ angular.module('carpooling')
       }, function() {
         createInfoWindow('Unable to compute distance', marker);
       });
-
+      
+      
       markers.push(marker);
       // bounds.extend(latLng);
       // map.fitBounds(bounds);

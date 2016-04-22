@@ -30,8 +30,8 @@ function appCtrl($scope, authFactory, $state, profileFactory,
   }
 
   function login() {
+    
     var state;
-
     authFactory.login().then(function (response) {
       if(response !== undefined && response.access_token !== undefined) {
         getProfile(response.access_token);

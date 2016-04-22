@@ -5,17 +5,21 @@
       <div class="item title">
         My events
       </div>
-      <div class="item item-body" ng-repeat="event in events">
-        <h2>{{event.name}}</h2>
-        <p>
-          This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
-          the content is from a card-body consisting of an image and paragraph text.
-        </p>
-        <p>
-          <a href="#" class=" button custom "><i class="icon ion-map"></i> View map </a>
-          <a href="#" class=" button custom pull-right"><i class="icon ion-chatbubbles"></i> Chat</a>
-        </p>
-      </div>
+      
+      <a class="item item-body" ng-repeat="event in events" ui-sref="app.event({id:event._id})">
+        <div class="row">
+          <div class="col">
+            <p class="day">{{event.datetime | date:'dd' }}
+            </p>
+            <p class="month">{{event.datetime | date:'MMMM' }}</p>
+          </div>
+          <div class="col col-80">
+            <h2>{{event.name}}</h2>
+            <p class="color">{{event.place}}</p>
+            <p>by {{event.organizer}}</p>
+          </div>
+        </div>
+      </a>
 
   </div>
   </ion-content>

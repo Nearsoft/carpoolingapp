@@ -21,7 +21,7 @@ angular.module('carpooling')
   }
 
   function getAll() {
-    return $http.get(apiUrl + 'events');
+    return $http.get(apiUrl + 'events/past'); // for testing only pls remove /past for production
   }
 
   function getEvent(id) {

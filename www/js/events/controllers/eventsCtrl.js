@@ -32,6 +32,7 @@ angular.module('carpooling')
   eventsFactory.getEvent($stateParams.id)
     .then(function(res) {
       $scope.event = res.data;
+      $scope.loaded = true;
       var coords = new google.maps.LatLng(res.data.position)
       mapFactory.drawMap(coords).then(function(res) {
         $scope.map = res;
