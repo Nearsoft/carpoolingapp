@@ -1,5 +1,13 @@
 <ion-view view-title="Map">
-    <ion-content>
-        <div id="map" data-tap-disabled="true"></div>
+    <ion-content class="content-stable">
+      <ion-spinner icon="spiral" ng-hide="!loaded"></ion-spinner>
+      <div class=" card">
+        <div class="item item-divider">
+          Track your car pooling
+        </div>
+        <div class="item item-text-wrap">
+            <div id="map" data-tap-disabled="true" style="min-height: 400px"></div>
+        </div>
+      </div>
     </ion-content>
 </ion-view>

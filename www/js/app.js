@@ -9,11 +9,8 @@ angular.module('carpooling', [
 
 .constant("clientId", "764821343773-cjpf8lnubnnmjrupiu8oen4vsacgcq9n.apps.googleusercontent.com")
 .constant("clientSecret", "5sAsJshpCHf_s4Tzk17_7nTK")
-
-
 // .constant("serverUrl", "http://localhost:3000/")
 // .constant("apiUrl", "http://localhost:3000/api/")
-
 .constant("serverUrl", "http://nscarpooling.herokuapp.com/")
 .constant("apiUrl", "http://nscarpooling.herokuapp.com/api/")
 
@@ -30,26 +27,6 @@ angular.module('carpooling', [
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-
-    // $rootScope.$on( '$stateChangeStart', function(e, to, toParams, from, fromParams) {
-    //   if(!$scope.isAuthenticated) {
-    //     console.log('$stateChangeStart: ', to);
-    //
-    //     // if (!authorized) {
-    //     //   console.log('$stateChangeStart: ', authorized);
-    //     //   // User is not permitted into this area
-    //     //   // Kick back to login
-    //     //   e.preventDefault();
-    //     //   $state.go('home.default', {}, { notify: true });
-    //     // }
-    //   }
-    //
-    //   $rootScope.$broadcast('AppController::startLoad', {to: to, from: from});
-    //
-    // });
-    //
-    // $rootScope.$on( '$stateChangeError', function(e, to, toParams, from, fromParams) {});
-    // $rootScope.$on( '$stateChangeSuccess', function(e, to, toParams, from, fromParams) {});
   });
 })
 
@@ -59,69 +36,75 @@ angular.module('carpooling', [
   .state('app', {
     url: '/app',
     abstract: true,
-    templateUrl: 'templates/menu.html',
+    templateUrl: 'templates/tabs.html',
     controller: 'appCtrl'
   })
-
+  // ----  My events  ------------
+  .state('app.myevents', {
+      url: '/myevents',
+      views: {
+        'tab-myevents': {
+          templateUrl: 'templates/myevents.html',
+          controller: 'eventsCtrl'
+        }
+      }
+  })
+  .state('app.myevent', {
+    url: '/myevent/:id',
+    views: {
+      'tab-myevents': {
+        templateUrl: 'templates/event.html',
+        controller: 'eventCtrl'
+      }
+    }
+  })
   .state('app.rideMap', {
     url: '/rideMap/:eventId',
     views: {
-      'menuContent': {
+      'tab-myevents': {
         templateUrl: 'templates/map.html',
         controller: 'rideCtrl'
       }
     }
   })
-
+  .state('app.chat', {
+    url: '/chat/:eventId',
+    views: {
+      'tab-myevents': {
+        templateUrl: "templates/chat.html",
+        controller: 'chatCtrl'
+      }
+    }
+  })
+  // ----- Events ---------
   .state('app.events', {
     url: '/events',
     views: {
-      'menuContent': {
+      'tab-events': {
         templateUrl: 'templates/events.html',
         controller: 'eventsCtrl'
       }
     }
   })
-
-  .state('app.myEvents', {
-    url: '/events?me',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/myEvents.html',
-        controller: 'eventsCtrl'
-      }
-    }
-  })
-
   .state('app.event', {
     url: '/event/:id',
     views: {
-      'menuContent': {
+      'tab-events': {
         templateUrl: 'templates/event.html',
         controller: 'eventCtrl'
       }
     }
   })
 
+  // ----- Login ---------
   .state('app.login', {
-      url: '/login',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/auth.html'
-        }
-      }
-  })
-
-  .state('app.chat', {
-    url: '/chat/:eventId',
+    url: '/login',
     views: {
-      'menuContent': {
-        templateUrl: "templates/chat.html",
-        controller: 'chatCtrl'
+      'tab-myevents': {
+        templateUrl: 'templates/auth.html'
       }
     }
   });
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/app/myevents');
 });

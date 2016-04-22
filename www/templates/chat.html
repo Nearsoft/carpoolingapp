@@ -1,19 +1,14 @@
-<ion-view view-title="Chat" class="light-grey">
-  <ion-nav-buttons side="secondary">
-    <button class="button" ng-show="connected" ui-sref="app.rideMap({eventId: eventId})">
-      <i class="icon ion-map"></i>
-    </button>
-  </ion-nav-buttons>
+<ion-view view-title="Chat" class="chat">
 
- 	<ion-content has-bouncing="true" class="content">
-    <ion-spinner icon="spiral" ng-hide="connected"></ion-spinner>
+
+  <div class="bar bar-subheader" ng-show="connected">
+    <strong>Driver:</strong> Victor <strong>Passengers:</strong>  <span ng-if="attendees" ng-repeat="attendee in attendees">{{attendee.name}}{{$last ? "" : ", "}}</span>
+    <span ng-if="!attendees">This ride has no passengers yet</span>
+  </div>
+  
+ 	<ion-content has-bouncing="true" class="content-stable has-subheader">
+      <ion-spinner icon="spiral" ng-hide="connected"></ion-spinner>
     <div ng-show="connected">
-      <div class="log pad">People in this car:</div>
-      <div class="log pad">
-        <span ng-if="attendees" ng-repeat="attendee in attendees">{{attendee.name}}{{$last ? "" : ", "}}</span>
-        <span ng-if="!attendees">This ride has no passengers yet</span>
-      </div>
-      <div class="log pad">{{strParticipants}}</div>
       <ion-list>
         <ion-item ng-class="{message: message.style, log: !message.style}" ng-repeat="message in messages">
           <span ng-class="{message: message.style, log: !message.style}" ng-show="message.style" ng-style="{color:message.color}" >{{message.username}} : </span>
@@ -25,14 +20,13 @@
     </div>
 	</ion-content>
 
-  <div class="list light-grey bottommsg">
-    <div class="item item-input-inset light-grey">
-      <label class="item-input-wrapper line-light-grey nopadtop">
-        <input class="line-light-grey" ng-change="updateTyping()" type="text" placeholder="Type your message" ng-enter="sendMessage()" ng-model="message" ng-disabled="!connected">
-      </label>
-      <div class="divsend">
-          <button class="button button-positive ion-android-send iconsend" ng-click="sendMessage()" ng-disabled="!connected"></button>
-      </div>
-    </div>
-  </div>
+
+  
+  <ion-footer-bar keyboard-attach class="bar-stable item-input-inset">
+    <label class="item-input-wrapper">
+      <input class="line-light-grey" ng-change="updateTyping()" type="text" placeholder="Type your message" ng-enter="sendMessage()" ng-model="message" ng-disabled="!connected">
+    </label>
+    <button class="button button-positive ion-android-send iconsend" ng-click="sendMessage()" ng-disabled="!connected"> </button>
+  </ion-footer-bar>
+  
  </ion-view>

@@ -1,14 +1,21 @@
 <ion-view view-title="Events">
   <ion-content>
     <ion-spinner icon="spiral" ng-hide="loaded"></ion-spinner>
-    <ul ng-show="events" class="list">
-      <li class="item" ng-repeat="event in events">
-        <a ng-href="#/app/event/{{event._id}}">
-          <h2>{{event.name}}</h2>
-          <div><small>{{event.place}}</small></div>
-          <div><small>{{event.address}}</small></div>  
-        </a>
-      </li>
-    </ul>
+    <div class="list card" id="events">
+      <a class="item item-body" ng-repeat="event in events" ui-sref="app.event({id:event._id})">
+        <div class="row">
+          <div class="col">
+            <p class="day">{{event.datetime | date:'dd' }}
+            </p>
+            <p class="month">{{event.datetime | date:'MMMM' }}</p>
+          </div>
+          <div class="col col-80">
+            <h2>{{event.name}}</h2>
+            <p class="color">{{event.place}}</p>
+            <p>by {{event.organizer}}</p>
+          </div>
+        </div>
+      </a>
+    </div>
   </ion-content>
 </ion-view>
