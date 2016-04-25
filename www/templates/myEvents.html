@@ -5,14 +5,18 @@
       <a class="item item-body" ng-repeat="event in events" ui-sref="app.myevent({id:event._id})">
         <div class="row">
           <div class="col">
-            <p class="day">{{event.datetime | date:'dd' }}
-            </p>
-            <p class="month">{{event.datetime | date:'MMMM' }}</p>
+            <div class="calendar">
+              <div class="header">{{event.datetime | date:'MMMM' }}</div>
+              <div class="body">
+                <div class="date">{{event.datetime | date:'dd' }}</div>
+                <div class="year">2016</div>
+              </div>
+            </div>
           </div>
           <div class="col col-80">
             <h2>{{event.name}}</h2>
             <p class="color">{{event.place}}</p>
-            <p>by {{event.organizer}}</p>
+            <p>{{event.datetime | date:'shortTime' }} created by: {{event.organizer}}</p>
           </div>
         </div>
       </a>
